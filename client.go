@@ -24,6 +24,7 @@ type Client struct {
 	CertificateBase64 string
 	KeyFile           string
 	KeyBase64         string
+  Conn              *net.Conn
 }
 
 // BareClient can be used to set the contents of your
@@ -102,11 +103,18 @@ func (client *Client) ConnectAndWrite(resp *PushNotificationResponse, payload []
 		Certificates: []tls.Certificate{cert},
 		ServerName: gatewayParts[0],
 	}
+  
+  var conn net.Conn
+  
+  if client.Conn != nil {
+    conn = *client.Conn
+  } else {
+    conn, err = net.Dial("tcp", client.Gateway)    
+  	if err != nil {
+  		return err
+  	}
+  }
 
-	conn, err := net.Dial("tcp", client.Gateway)
-	if err != nil {
-		return err
-	}
 	defer conn.Close()
 
 	tlsConn := tls.Client(conn, conf)
