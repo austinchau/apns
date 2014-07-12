@@ -24,7 +24,7 @@ type Client struct {
 	CertificateBase64 string
 	KeyFile           string
 	KeyBase64         string
-  Conn              *net.Conn
+  Conn              net.Conn
 }
 
 // BareClient can be used to set the contents of your
@@ -107,7 +107,7 @@ func (client *Client) ConnectAndWrite(resp *PushNotificationResponse, payload []
   var conn net.Conn
   
   if client.Conn != nil {
-    conn = *client.Conn
+    conn = client.Conn
   } else {
     conn, err = net.Dial("tcp", client.Gateway)    
   	if err != nil {
